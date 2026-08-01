@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>An invitation</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:SOFT,WONK,opsz,wght@0..100,0..1,9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --ink:      #14101F;   /* night ground */
+  --ink-2:    #1F1830;   /* raised card */
+  --ink-3:    #2B2140;   /* borders, wells */
+  --rose:     #E8577C;   /* the one saturated accent */
+  --gold:     #E8B84B;   /* café brass — prices, rules */
+  --cream:    #F7F1E6;   /* paper + primary text */
+  --muted:    #A79BB8;   /* dusty mauve secondary */
+  --paper:    #FBF8F1;   /* the receipt */
+  --paper-ink:#241F2E;
+
+  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --sans: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: "Courier Prime", "Courier New", ui-monospace, monospace;
+
+  --radius: 18px;
+  --card-w: 480px;
+  --ease: cubic-bezier(.22,.8,.3,1);
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html,body{ margin:0; padding:0; }
+
+body{
+  min-height:100svh;
+  background:
+    radial-gradient(90% 55% at 50% 0%, #33244A 0%, rgba(51,36,74,0) 62%),
+    radial-gradient(70% 45% at 50% 108%, #3A1E33 0%, rgba(58,30,51,0) 60%),
+    var(--ink);
+  color:var(--cream);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+  justify-content:center;
+  padding:clamp(16px,4vw,40px) clamp(14px,4vw,24px) calc(40px + env(safe-area-inset-bottom));
+  overflow-x:hidden;
+}
+
+/* ============================================================
+   SHELL
+   ============================================================ */
+.card{
+  width:100%;
+  max-width:var(--card-w);
+  align-self:center;
+  position:relative;
+  z-index:1;
+}
+
+.step{ display:none; }
+.step.is-active{ display:block; animation:rise .5s var(--ease) both; }
+
+@keyframes rise{
+  from{ opacity:0; transform:translateY(14px); }
+  to{ opacity:1; transform:none; }
+}
+
+/* Course marker — the steps really are a sequence, so it earns its place */
+.eyebrow{
+  font-family:var(--sans);
+  font-size:.7rem;
+  font-weight:600;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--gold);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0 0 18px;
+}
+.eyebrow::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg, rgba(232,184,75,.55), rgba(232,184,75,0));
+}
+
+h1,h2{
+  font-family:var(--display);
+  font-variation-settings:"SOFT" 60, "WONK" 1, "opsz" 90;
+  font-weight:600;
+  line-height:1.08;
+  letter-spacing:-.015em;
+  margin:0 0 12px;
+  text-wrap:balance;
+}
+h1{ font-size:clamp(2.1rem,8.5vw,3rem); }
+h2{ font-size:clamp(1.6rem,6.2vw,2.15rem); }
+
+.lede{
+  color:var(--muted);
+  font-size:1.02rem;
+  margin:0 0 28px;
+  max-width:34ch;
+  text-wrap:pretty;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  font-family:var(--sans);
+  font-size:1rem;
+  font-weight:600;
+  color:var(--ink);
+  background:var(--cream);
+  border:none;
+  border-radius:100px;
+  padding:15px 34px;
+  cursor:pointer;
+  transition:transform .28s var(--ease), box-shadow .28s var(--ease), background .2s;
+  box-shadow:0 8px 24px -10px rgba(0,0,0,.7);
+}
+.btn:hover{ background:#fff; }
+.btn:active{ transform:scale(.97); }
+
+.btn-yes{
+  background:var(--rose);
+  color:#fff;
+  box-shadow:0 10px 30px -12px var(--rose);
+  transform-origin:center;
+}
+.btn-yes:hover{ background:#F0698A; }
+
+.btn-ghost{
+  background:transparent;
+  color:var(--muted);
+  border:1px solid var(--ink-3);
+}
+.btn-ghost:hover{ background:var(--ink-2); color:var(--cream); }
+
+.btn-next{
+  width:100%;
+  margin-top:26px;
+  background:var(--cream);
+}
+
+:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:3px;
+  border-radius:6px;
+}
+
+/* ============================================================
+   STEP 1 — the ask
+   ============================================================ */
+.actions{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  flex-wrap:wrap;
+  min-height:56px;
+  margin-top:8px;
+}
+#btnNo{ transition:transform .18s var(--ease), left .18s var(--ease), top .18s var(--ease); }
+#btnNo.is-loose{ z-index:50; }
+
+.whisper{
+  margin-top:22px;
+  font-size:.85rem;
+  color:var(--muted);
+  opacity:0;
+  transition:opacity .4s;
+}
+.whisper.is-shown{ opacity:.9; }
+
+/* ============================================================
+   CHOICE CHIPS (activities + protection)
+   ============================================================ */
+.chips{ display:flex; flex-wrap:wrap; gap:9px; }
+
+.chip{ position:relative; display:block; }
+.chip input{
+  position:absolute; opacity:0; width:100%; height:100%;
+  margin:0; cursor:pointer;
+}
+.chip span{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 16px;
+  border:1px solid var(--ink-3);
+  border-radius:100px;
+  background:var(--ink-2);
+  font-size:.94rem;
+  font-weight:500;
+  transition:border-color .2s, background .2s, color .2s, transform .2s var(--ease);
+  cursor:pointer;
+  user-select:none;
+}
+.chip input:hover + span{ border-color:#453563; }
+.chip input:checked + span{
+  background:rgba(232,87,124,.14);
+  border-color:var(--rose);
+  color:#fff;
+}
+.chip input:checked + span::after{
+  content:"✓";
+  font-size:.8rem;
+  color:var(--rose);
+  font-weight:700;
+}
+.chip input:focus-visible + span{ outline:2px solid var(--gold); outline-offset:3px; }
+
+.stack{ display:grid; gap:10px; }
+.stack .chip span{ border-radius:14px; padding:16px 18px; }
+
+/* ============================================================
+   MENU GRID (food & drinks)
+   ============================================================ */
+.menu-label{
+  font-size:.7rem; font-weight:600; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--muted);
+  margin:26px 0 12px;
+}
+.menu-label:first-of-type{ margin-top:4px; }
+
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(140px,1fr));
+  gap:10px;
+}
+
+.dish{
+  position:relative;
+  border:1px solid var(--ink-3);
+  border-radius:16px;
+  background:var(--ink-2);
+  padding:10px 10px 12px;
+  cursor:pointer;
+  transition:border-color .2s, background .2s, transform .2s var(--ease);
+  text-align:left;
+  font:inherit;
+  color:inherit;
+  display:block;
+  width:100%;
+}
+.dish:hover{ border-color:#453563; }
+.dish.is-picked{
+  border-color:var(--rose);
+  background:rgba(232,87,124,.11);
+}
+.dish-thumb{
+  width:100%;
+  aspect-ratio:1/1;
+  border-radius:11px;
+  background:linear-gradient(160deg,#2E2445,#241B38);
+  display:grid;
+  place-items:center;
+  font-size:2.4rem;
+  overflow:hidden;
+  margin-bottom:9px;
+}
+.dish-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.dish-name{ font-size:.88rem; font-weight:500; line-height:1.3; }
+
+.dish-tick{
+  position:absolute; top:16px; right:16px;
+  width:24px; height:24px; border-radius:50%;
+  background:var(--rose); color:#fff;
+  display:grid; place-items:center;
+  font-size:.75rem; font-weight:700;
+  opacity:0; transform:scale(.5);
+  transition:opacity .2s, transform .25s var(--ease);
+}
+.dish.is-picked .dish-tick{ opacity:1; transform:scale(1); }
+
+.qty{
+  display:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  margin-top:9px;
+  background:var(--ink);
+  border-radius:100px;
+  padding:3px;
+}
+.dish.is-picked .qty{ display:flex; }
+.qty button{
+  width:28px; height:28px;
+  border-radius:50%;
+  border:none;
+  background:var(--ink-3);
+  color:var(--cream);
+  font-size:1rem;
+  line-height:1;
+  cursor:pointer;
+  font-family:var(--sans);
+}
+.qty button:hover{ background:var(--rose); color:#fff; }
+.qty output{ font-size:.85rem; font-weight:600; font-variant-numeric:tabular-nums; }
+
+/* ============================================================
+   HINTS
+   ============================================================ */
+.hint{
+  margin-top:14px;
+  font-size:.86rem;
+  color:var(--rose);
+  min-height:1.2em;
+  opacity:0;
+  transition:opacity .25s;
+}
+.hint.is-shown{ opacity:1; animation:nudge .4s; }
+@keyframes nudge{
+  0%,100%{ transform:translateX(0); }
+  25%{ transform:translateX(-5px); }
+  75%{ transform:translateX(5px); }
+}
+
+/* ============================================================
+   SIGNATURE — THE RECEIPT
+   ============================================================ */
+.receipt-slot{
+  overflow:hidden;
+  max-height:0;
+  transition:max-height 1.1s var(--ease);
+  margin-top:24px;
+}
+.receipt-slot.is-printing{ max-height:2400px; }
+
+.receipt{
+  --tooth:9px;
+  background:var(--paper);
+  color:var(--paper-ink);
+  font-family:var(--mono);
+  font-size:.86rem;
+  line-height:1.65;
+  padding:26px 20px 24px;
+  transform:translateY(-101%);
+  transition:transform 1.1s var(--ease);
+  box-shadow:0 24px 60px -24px rgba(0,0,0,.85);
+  -webkit-mask:
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+      bottom / calc(var(--tooth)*2) var(--tooth) repeat-x,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg)
+      top / calc(var(--tooth)*2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - var(--tooth)*2) no-repeat;
+  mask:
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+      bottom / calc(var(--tooth)*2) var(--tooth) repeat-x,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg)
+      top / calc(var(--tooth)*2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - var(--tooth)*2) no-repeat;
+}
+.receipt-slot.is-printing .receipt{ transform:translateY(0); }
+
+.r-head{ text-align:center; margin-bottom:16px; }
+.r-shop{
+  font-family:var(--display);
+  font-variation-settings:"SOFT" 40,"WONK" 0,"opsz" 60;
+  font-size:1.35rem;
+  font-weight:600;
+  letter-spacing:.02em;
+  margin:0 0 2px;
+}
+.r-sub{ font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; opacity:.6; margin:0; }
+
+.r-rule{ border:0; border-top:1px dashed rgba(36,31,46,.35); margin:14px 0; }
+
+.r-section{
+  font-size:.68rem; letter-spacing:.16em; text-transform:uppercase;
+  font-weight:700; opacity:.55; margin:0 0 6px;
+}
+
+.r-line{ display:flex; align-items:baseline; gap:6px; }
+.r-line .r-what{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.r-line .r-dots{
+  flex:1;
+  border-bottom:1px dotted rgba(36,31,46,.4);
+  transform:translateY(-3px);
+  min-width:12px;
+}
+.r-line .r-amt{ font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+.r-note{ font-size:.8rem; opacity:.75; margin:2px 0 0; }
+
+.r-total{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-weight:700; font-size:1.05rem;
+  padding:4px 0;
+}
+.r-total .r-amt{ font-variant-numeric:tabular-nums; }
+
+.r-pay{
+  margin-top:16px;
+  border:1px dashed rgba(36,31,46,.4);
+  border-radius:8px;
+  padding:13px 14px;
+  text-align:center;
+}
+.r-pay-label{ font-size:.66rem; letter-spacing:.18em; text-transform:uppercase; opacity:.6; margin:0 0 4px; }
+.r-num{ font-size:1.22rem; font-weight:700; letter-spacing:.06em; margin:0 0 10px; }
+.btn-copy{
+  font-family:var(--mono);
+  font-size:.76rem;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  background:var(--paper-ink);
+  color:var(--paper);
+  border:none;
+  border-radius:100px;
+  padding:8px 18px;
+  cursor:pointer;
+}
+.btn-copy:active{ transform:scale(.96); }
+
+.r-foot{ text-align:center; font-size:.74rem; opacity:.6; margin:14px 0 0; }
+
+/* ============================================================
+   SEND STATUS
+   ============================================================ */
+.status{
+  display:flex; align-items:center; gap:10px;
+  margin-top:22px;
+  padding:13px 16px;
+  border-radius:14px;
+  border:1px solid var(--ink-3);
+  background:var(--ink-2);
+  font-size:.88rem;
+  color:var(--muted);
+}
+.status.is-ok{ border-color:rgba(232,184,75,.5); color:var(--gold); }
+.status.is-bad{ border-color:rgba(232,87,124,.5); color:var(--rose); }
+.status .dot{
+  width:8px; height:8px; border-radius:50%;
+  background:currentColor; flex:none;
+  animation:pulse 1.4s ease-in-out infinite;
+}
+.status.is-ok .dot, .status.is-bad .dot{ animation:none; }
+@keyframes pulse{ 0%,100%{opacity:.3} 50%{opacity:1} }
+.status a{ color:inherit; }
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+#confetti{
+  position:fixed; inset:0;
+  pointer-events:none;
+  z-index:99;
+}
+
+/* ============================================================
+   RESPONSIVE + MOTION
+   ============================================================ */
+@media (max-width:380px){
+  .menu-grid{ grid-template-columns:repeat(2,1fr); gap:8px; }
+  .dish-thumb{ font-size:2rem; }
+  .btn{ padding:14px 26px; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+  .receipt{ transform:none; }
+  .receipt-slot{ max-height:2400px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main class="card">
+
+  <!-- ══ COURSE I — THE INVITATION ══ -->
+  <section class="step is-active" id="step1" aria-labelledby="h1">
+    <p class="eyebrow">An invitation</p>
+    <h1 id="h1">Will you go on a ROOM DATE with me?</h1>
+    <p class="lede">I've already picked the place. All that's missing is you.</p>
+    <div class="actions">
+      <button class="btn btn-yes" id="btnYes" type="button">Yes</button>
+      <button class="btn btn-ghost" id="btnNo" type="button">No</button>
+    </div>
+    <p class="whisper" id="whisper">The other button doesn't work. I checked.</p>
+  </section>
+
+  <!-- ══ COURSE II — HOW WE SPEND IT ══ -->
+  <section class="step" id="step2" aria-labelledby="h2a">
+    <p class="eyebrow">Course II · How we spend it</p>
+    <h2 id="h2a">What should the day include?</h2>
+    <p class="lede">Pick as many as you like. I'm taking notes.</p>
+    <div class="chips" id="activityList"></div>
+    <p class="hint" id="hint2">Pick at least one. Anything.</p>
+    <button class="btn btn-next" type="button" data-next="3">Next</button>
+  </section>
+
+  <!-- ══ COURSE III — THE TABLE ══ -->
+  <section class="step" id="step3" aria-labelledby="h3a">
+    <p class="eyebrow">Course III · The table</p>
+    <h2 id="h3a">What are we eating?</h2>
+    <p class="lede">Order whatever you want. Don't hold back.</p>
+    <p class="menu-label">Food</p>
+    <div class="menu-grid" id="foodList"></div>
+    <p class="menu-label">Drinks</p>
+    <div class="menu-grid" id="drinkList"></div>
+    <p class="hint" id="hint3">Choose something first. You have to eat.</p>
+    <button class="btn btn-next" type="button" data-next="4">Next</button>
+  </section>
+
+  <!-- ══ COURSE IV — THE FINE PRINT ══ -->
+  <section class="step" id="step4" aria-labelledby="h4a">
+    <p class="eyebrow">Course IV · The fine print</p>
+    <h2 id="h4a">One last thing.</h2>
+    <p class="lede">Who's bringing the CONDOM?</p>
+    <div class="stack" id="protectionList"></div>
+    <p class="hint" id="hint4">Pick one. This part matters.</p>
+    <button class="btn btn-next" type="button" data-next="5">Next</button>
+  </section>
+
+  <!-- ══ THE BILL ══ -->
+  <section class="step" id="step5" aria-labelledby="h5a">
+    <p class="eyebrow">The bill</p>
+    <h2 id="h5a">You said yes.</h2>
+    <p class="lede" id="billLede">Thank you. Here's everything you asked for — and, unfortunately, what it costs.</p>
+    <div class="receipt-slot" id="receiptSlot">
+      <div class="receipt" id="receipt"></div>
+    </div>
+    <div class="status" id="sendStatus" role="status" aria-live="polite">
+      <!-- <span class="dot"></span><span id="sendText">Sending your answers…</span> -->
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   1. EDIT THIS BLOCK — everything you need to change is here.
+   ══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  yourName:      "Tajnur",              // shown on the receipt header
+  bkashNumber:   "01XXXXXXXXX",        // your bKash number
+  currency:      "৳",
+
+  // Email delivery (see the setup notes). Paste your Web3Forms access key:
+  web3formsKey:  "",                   // e.g. "a1b2c3d4-...."
+  fallbackEmail: "you@example.com",    // used only if sending fails
+
+  protectionPrice: 150,                // BDT, added when SHE picks "You'll bring it"
+  chargeProtectionOn: "him"            // "him" = charge her when you bring it. "her" = the opposite.
+};
+
+/* Activities. Add, remove, reword freely. */
+const ACTIVITIES = [
+  { emoji: "🤗", label: "Long hugs" },
+  { emoji: "💋", label: "Kisses" },
+  { emoji: "🫂", label: "Cuddling" },
+  { emoji: "🫂", label: "Adoooooorrrrrr" },
+  { emoji: "🤝", label: "Holding hands" },
+  { emoji: "🚗", label: "Kissing Nipplies" },
+  { emoji: "🎬", label: "A movie" },
+  { emoji: "✨", label: "Stargazing" },
+  { emoji: "📸", label: "Photos together" },
+  { emoji: "🍮", label: "Sharing dessert" },
+  { emoji: "💬", label: "Talking for hours" },
+  { emoji: "🚶", label: "A long walk" },
+  { emoji: "💃", label: "Slow dancing" }
+];
+
+/* Menu. `price` is BDT and is never shown until the bill.
+   `img` is optional — drop photos in an /images folder and set the path,
+   e.g. img: "images/burger.jpg". Leave it "" to use the emoji tile. */
+const MENU = {
+  food: [
+    { id: "biryani", name: "Chicken Biryani",  price: 350, emoji: "🍛", img: "" },
+    { id: "burger",  name: "Beef Burger",      price: 450, emoji: "🍔", img: "" },
+    { id: "pizza",   name: "Pizza",            price: 620, emoji: "🍕", img: "" },
+    { id: "pasta",   name: "Pasta Alfredo",    price: 520, emoji: "🍝", img: "" },
+    { id: "momo",    name: "Chicken Momo",     price: 240, emoji: "🥟", img: "" },
+    { id: "fries",   name: "French Fries",     price: 180, emoji: "🍟", img: "" },
+    { id: "cake",    name: "Chocolate Cake",   price: 320, emoji: "🍰", img: "" }
+  ],
+  drinks: [
+    { id: "coldcof", name: "Cold Coffee",      price: 260, emoji: "🧋", img: "" },
+    { id: "mojito",  name: "Mojito",           price: 240, emoji: "🍹", img: "" },
+    { id: "lassi",   name: "Mango Lassi",      price: 200, emoji: "🥭", img: "" },
+    { id: "shake",   name: "Chocolate Shake",  price: 300, emoji: "🥤", img: "" },
+    { id: "icetea",  name: "Lemon Iced Tea",   price: 180, emoji: "🍋", img: "" }
+  ]
+};
+
+const PROTECTION = [
+  { id: "her", emoji: "😌", label: "I'll bring it" },
+  { id: "him", emoji: "😏", label: "You'll bring it" }
+];
+
+/* Escalating labels for the button that runs away. */
+const NO_LABELS = [
+  "No", "Are you sure?", "Really?", "Think again", "Last chance",
+  "You can't catch me", "Still no?", "Nice try", "Give up", "Just say yes"
+];
+
+/* ══════════════════════════════════════════════════════════════
+   2. From here down you shouldn't need to change anything.
+   ══════════════════════════════════════════════════════════════ */
+
+const $  = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const state = {
+  activities: [],          // labels
+  order: {},               // id -> qty
+  protection: null         // "her" | "him"
+};
+
+const ALL_ITEMS = [...MENU.food, ...MENU.drinks];
+const itemById = (id) => ALL_ITEMS.find((i) => i.id === id);
+const money = (n) => CONFIG.currency + n.toLocaleString("en-US");
+
+/* ── Step navigation ───────────────────────────────────────── */
+function goTo(n) {
+  $$(".step").forEach((s) => s.classList.remove("is-active"));
+  const step = document.getElementById("step" + n);
+  step.classList.add("is-active");
+  window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  const heading = step.querySelector("h1,h2");
+  if (heading) { heading.setAttribute("tabindex", "-1"); heading.focus({ preventScroll: true }); }
+  if (n === 5) finish();
+}
+
+function nudge(el) {
+  el.classList.add("is-shown");
+  setTimeout(() => el.classList.remove("is-shown"), 2600);
+}
+
+/* ── Step 1: the button that refuses to be clicked ─────────── */
+const btnNo  = $("#btnNo");
+const btnYes = $("#btnYes");
+let dodges = 0;
+
+function dodge(e) {
+  if (e && e.cancelable) e.preventDefault();
+  dodges++;
+
+  const pad = 12;
+  const r = btnNo.getBoundingClientRect();
+  const maxX = Math.max(pad, window.innerWidth  - r.width  - pad);
+  const maxY = Math.max(pad, window.innerHeight - r.height - pad);
+
+  btnNo.classList.add("is-loose");
+  btnNo.style.position = "fixed";
+  btnNo.style.margin = "0";
+  btnNo.style.left = pad + Math.random() * (maxX - pad) + "px";
+  btnNo.style.top  = pad + Math.random() * (maxY - pad) + "px";
+  btnNo.textContent = NO_LABELS[Math.min(dodges, NO_LABELS.length - 1)];
+  btnNo.style.transform = "scale(" + Math.max(0.55, 1 - dodges * 0.055) + ")";
+  btnYes.style.transform = "scale(" + Math.min(1.4, 1 + dodges * 0.05) + ")";
+
+  if (dodges === 2) $("#whisper").classList.add("is-shown");
+}
+
+btnNo.addEventListener("mouseenter", dodge);
+btnNo.addEventListener("touchstart", dodge, { passive: false });
+btnNo.addEventListener("click", dodge);
+btnNo.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") dodge(e); });
+
+window.addEventListener("resize", () => {
+  if (!dodges) return;
+  const pad = 12, r = btnNo.getBoundingClientRect();
+  btnNo.style.left = Math.min(parseFloat(btnNo.style.left) || pad, window.innerWidth  - r.width  - pad) + "px";
+  btnNo.style.top  = Math.min(parseFloat(btnNo.style.top)  || pad, window.innerHeight - r.height - pad) + "px";
+});
+
+btnYes.addEventListener("click", () => {
+  burst();
+  setTimeout(() => goTo(2), reduceMotion ? 0 : 420);
+});
+
+/* ── Step 2: activities ────────────────────────────────────── */
+$("#activityList").innerHTML = ACTIVITIES.map((a, i) => `
+  <label class="chip">
+    <input type="checkbox" value="${esc(a.label)}" id="act${i}">
+    <span>${a.emoji} ${esc(a.label)}</span>
+  </label>`).join("");
+
+/* ── Step 3: the menu ──────────────────────────────────────── */
+function dishHTML(item) {
+  const thumb = item.img
+    ? `<img src="${esc(item.img)}" alt="" loading="lazy"
+         onerror="this.replaceWith(document.createTextNode('${item.emoji}'))">`
+    : item.emoji;
+  return `
+    <div class="dish" data-id="${item.id}" role="checkbox" aria-checked="false" tabindex="0">
+      <div class="dish-tick">✓</div>
+      <div class="dish-thumb">${thumb}</div>
+      <div class="dish-name">${esc(item.name)}</div>
+      <div class="qty">
+        <button type="button" data-step="-1" aria-label="One less ${esc(item.name)}">−</button>
+        <output>1</output>
+        <button type="button" data-step="1" aria-label="One more ${esc(item.name)}">+</button>
+      </div>
+    </div>`;
+}
+$("#foodList").innerHTML  = MENU.food.map(dishHTML).join("");
+$("#drinkList").innerHTML = MENU.drinks.map(dishHTML).join("");
+
+function setQty(card, qty) {
+  const id = card.dataset.id;
+  if (qty <= 0) {
+    delete state.order[id];
+    card.classList.remove("is-picked");
+    card.setAttribute("aria-checked", "false");
+  } else {
+    state.order[id] = qty;
+    card.classList.add("is-picked");
+    card.setAttribute("aria-checked", "true");
+    card.querySelector("output").textContent = qty;
+  }
+}
+
+$$(".dish").forEach((card) => {
+  card.addEventListener("click", (e) => {
+    const stepBtn = e.target.closest("[data-step]");
+    const id = card.dataset.id;
+    if (stepBtn) {
+      e.stopPropagation();
+      setQty(card, (state.order[id] || 0) + Number(stepBtn.dataset.step));
+    } else {
+      setQty(card, state.order[id] ? 0 : 1);
+    }
+  });
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); card.click(); }
+  });
+});
+
+/* ── Step 4: protection ────────────────────────────────────── */
+$("#protectionList").innerHTML = PROTECTION.map((p) => `
+  <label class="chip">
+    <input type="radio" name="protection" value="${p.id}">
+    <span>${p.emoji} ${esc(p.label)}</span>
+  </label>`).join("");
+
+/* ── Next buttons + validation ─────────────────────────────── */
+$$("[data-next]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const to = Number(btn.dataset.next);
+
+    if (to === 3) {
+      state.activities = $$("#activityList input:checked").map((i) => i.value);
+      if (!state.activities.length) return nudge($("#hint2"));
+    }
+    if (to === 4 && !Object.keys(state.order).length) return nudge($("#hint3"));
+    if (to === 5) {
+      const picked = $('input[name="protection"]:checked');
+      if (!picked) return nudge($("#hint4"));
+      state.protection = picked.value;
+    }
+    goTo(to);
+  });
+});
+
+/* ── The bill ──────────────────────────────────────────────── */
+function buildBill() {
+  const lines = Object.entries(state.order).map(([id, qty]) => {
+    const item = itemById(id);
+    return { name: item.name, qty, unit: item.price, sum: item.price * qty };
+  });
+
+  const chargeProtection = state.protection === CONFIG.chargeProtectionOn;
+  if (chargeProtection) {
+    lines.push({ name: "Protection", qty: 1, unit: CONFIG.protectionPrice, sum: CONFIG.protectionPrice, note: true });
+  }
+
+  const total = lines.reduce((t, l) => t + l.sum, 0);
+  return { lines, total, chargeProtection };
+}
+
+function renderReceipt(bill) {
+  const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  const protectionLabel = PROTECTION.find((p) => p.id === state.protection).label;
+
+  const activityRows = state.activities.map(
+    (a) => `<div class="r-line"><span class="r-what">${esc(a)}</span><span class="r-dots"></span><span class="r-amt">✓</span></div>`
+  ).join("");
+
+  const itemRows = bill.lines.map((l) => `
+    <div class="r-line">
+      <span class="r-what">${esc(l.name)}${l.qty > 1 ? " ×" + l.qty : ""}</span>
+      <span class="r-dots"></span>
+      <span class="r-amt">${money(l.sum)}</span>
+    </div>`).join("");
+
+  $("#receipt").innerHTML = `
+    <div class="r-head">
+      <p class="r-shop">${esc(CONFIG.yourName)} &amp; You</p>
+      <p class="r-sub">Table for two · ${today}</p>
+    </div>
+    <hr class="r-rule">
+    <p class="r-section">Agreed on</p>
+    ${activityRows}
+    <hr class="r-rule">
+    <p class="r-section">Ordered</p>
+    ${itemRows}
+    <hr class="r-rule">
+    <div class="r-total"><span>Total</span><span class="r-amt">${money(bill.total)}</span></div>
+    <hr class="r-rule">
+    <p class="r-section">Protection</p>
+    <p class="r-note">${esc(protectionLabel)}${bill.chargeProtection ? " — added to your bill" : " — noted, no charge"}</p>
+    <div class="r-pay">
+      <p class="r-pay-label">Send money via bKash</p>
+      <p class="r-num">${esc(CONFIG.bkashNumber)}</p>
+      <button class="btn-copy" type="button" id="btnCopy">Copy number</button>
+    </div>
+    <p class="r-foot">Payment optional. Showing up is not.</p>`;
+
+  $("#btnCopy").addEventListener("click", async (e) => {
+    const b = e.currentTarget;
+    try { await navigator.clipboard.writeText(CONFIG.bkashNumber); }
+    catch { /* clipboard blocked — the number is on screen anyway */ }
+    b.textContent = "Copied";
+    setTimeout(() => (b.textContent = "You know my Bkash Number"), 1600);
+  });
+}
+
+/* ── Email delivery ────────────────────────────────────────── */
+function buildMessage(bill) {
+  const L = [];
+  L.push("She said yes.");
+  L.push("");
+  L.push("ACTIVITIES");
+  state.activities.forEach((a) => L.push("  - " + a));
+  L.push("");
+  L.push("ORDER");
+  bill.lines.forEach((l) => L.push("  - " + l.name + " x" + l.qty + "  =  " + money(l.sum)));
+  L.push("");
+  L.push("TOTAL: " + money(bill.total));
+  L.push("");
+  L.push("PROTECTION: " + PROTECTION.find((p) => p.id === state.protection).label +
+         (bill.chargeProtection ? " (charged)" : " (not charged)"));
+  L.push("");
+  L.push("Submitted: " + new Date().toLocaleString());
+  return L.join("\n");
+}
+
+let alreadySent = false;
+
+async function sendAnswers(bill) {
+  if (alreadySent) return;
+  const box  = $("#sendStatus");
+  const text = $("#sendText");
+  const message = buildMessage(bill);
+
+  if (!CONFIG.web3formsKey) {
+    box.className = "status is-bad";
+    text.innerHTML = 'No access key set yet. ' + mailtoLink(message, "Send it by email");
+    console.log(message);
+    return;
+  }
+
+  box.className = "status";
+  text.textContent = "Sending your answers…";
+
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        access_key: CONFIG.web3formsKey,
+        subject: "She said yes 💌",
+        from_name: "Date invitation",
+        activities: state.activities.join(", "),
+        order: bill.lines.map((l) => l.name + " x" + l.qty).join(", "),
+        total: money(bill.total),
+        protection: PROTECTION.find((p) => p.id === state.protection).label,
+        message: message
+      })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || "rejected");
+
+    alreadySent = true;
+    box.className = "status is-ok";
+    text.textContent = "Your answers are with " + CONFIG.yourName + ".";
+  } catch (err) {
+    box.className = "status is-bad";
+    text.innerHTML = "Couldn't reach the inbox. " + mailtoLink(message, "Send it yourself");
+    console.error(err);
+  }
+}
+
+function mailtoLink(message, label) {
+  const href = "mailto:" + CONFIG.fallbackEmail +
+    "?subject=" + encodeURIComponent("She said yes") +
+    "&body=" + encodeURIComponent(message);
+  return '<a href="' + href + '">' + label + '</a>';
+}
+
+/* ── Final step orchestration ──────────────────────────────── */
+let finished = false;
+function finish() {
+  if (finished) return;
+  finished = true;
+  const bill = buildBill();
+  renderReceipt(bill);
+  setTimeout(() => $("#receiptSlot").classList.add("is-printing"), reduceMotion ? 0 : 260);
+  setTimeout(() => burst(), reduceMotion ? 0 : 900);
+  sendAnswers(bill);
+}
+
+/* ── Confetti ──────────────────────────────────────────────── */
+const canvas = $("#confetti");
+const ctx = canvas.getContext("2d");
+let pieces = [], raf = null;
+
+function sizeCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width  = window.innerWidth  * dpr;
+  canvas.height = window.innerHeight * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+sizeCanvas();
+window.addEventListener("resize", sizeCanvas);
+
+function burst() {
+  if (reduceMotion) return;
+  const glyphs = ["♥", "♡", "✦", "❤"];
+  const colors = ["#E8577C", "#E8B84B", "#F7F1E6", "#F0698A"];
+  for (let i = 0; i < 46; i++) {
+    pieces.push({
+      x: window.innerWidth / 2 + (Math.random() - 0.5) * 160,
+      y: window.innerHeight * 0.45,
+      vx: (Math.random() - 0.5) * 9,
+      vy: -Math.random() * 13 - 4,
+      g: 0.32 + Math.random() * 0.18,
+      rot: Math.random() * 6.28,
+      vr: (Math.random() - 0.5) * 0.25,
+      size: 12 + Math.random() * 16,
+      life: 1,
+      glyph: glyphs[(Math.random() * glyphs.length) | 0],
+      color: colors[(Math.random() * colors.length) | 0]
+    });
+  }
+  if (!raf) raf = requestAnimationFrame(tick);
+}
+
+function tick() {
+  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  pieces = pieces.filter((p) => p.life > 0 && p.y < window.innerHeight + 60);
+  pieces.forEach((p) => {
+    p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 0.006;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.color;
+    ctx.font = p.size + "px serif";
+    ctx.textAlign = "center";
+    ctx.fillText(p.glyph, 0, 0);
+    ctx.restore();
+  });
+  if (pieces.length) { raf = requestAnimationFrame(tick); }
+  else { ctx.clearRect(0, 0, window.innerWidth, window.innerHeight); raf = null; }
+}
+
+/* ── Utility ───────────────────────────────────────────────── */
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+</script>
+</body>
+</html>
